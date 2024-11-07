@@ -9,7 +9,7 @@ Examples:
 # run as a standalone script
 
 # inspect line profiles in the window 0 of the level 1 data file
-python eispac_inspector.py -d eis_yyyymmdd_hhmmss.*.fit.h5
+python eispac_inspector.py -d eis_yyyymmdd_hhmmss.*.data.h5
 
 # inspect line profiles in around 195.119 Angstrom in the level 1 data file
 python eispac_inspector.py -d eis_yyyymmdd_hhmmss.data.h5 -i 195.119
