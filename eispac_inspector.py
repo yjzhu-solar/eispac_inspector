@@ -282,6 +282,8 @@ class EISInspector:
 
             for ax_ in (self.ax_line_profile, self.ax_residual):
                 ax_.tick_params(direction="in")
+            
+            self.ax_line_profile.set_xlim(*self.select_wave_range)
         
         self.ax1.coords[0].set_axislabel("Solar-X [arcsec]",fontsize=10)
         self.ax1.coords[1].set_axislabel("Solar-Y [arcsec]",fontsize=10)
@@ -304,7 +306,7 @@ class EISInspector:
         
         self.ax_line_profile.set_ylabel(r"Intensity [$\rm erg\,s^{-1}\,cm^{-2}\,sr^{-1}$]")
         self.ax_line_profile.ticklabel_format(axis="y", style="sci", scilimits=(-2,2))
-        self.ax_line_profile.set_xlim(*self.select_wave_range)
+
         
 
         self.select_x = None
@@ -576,12 +578,6 @@ def top_offset(self, bboxes, bboxes2):
 
 
 if __name__ == "__main__":
-    # filename_fit = "../../Solar/EIS_DKIST_SolO/src/EIS/DHB_007_v2/20221025T0023/eis_20221025_002341.fe_12_195_119.1c-0.fit.h5"
-    # # filename_fit = "../../Solar/EIS_DKIST_SolO/src/EIS/DHB_007_v2/20221025T0023/eis_20221025_014811.fe_11_188_216.2c-0.fit.h5"
-    # filename_data = "../../Solar/EIS_DKIST_SolO/src/EIS/DHB_007_v2/20221025T0023/eis_20221025_002341.data.h5"
-    # # eis = EISInspector(filename_data=filename_data, index=0)
-    # eis = EISInspector(filename_fit=filename_fit, index=0)
-
     parser = argparse.ArgumentParser(description="Inspect EIS data or fit file.")
     parser.add_argument("-d","--data", type=str, help="The data file to inspect. If only a data file is provided, "
                                                       "the GUI will show the integrated intensity map. "
