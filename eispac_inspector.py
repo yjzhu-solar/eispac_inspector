@@ -183,7 +183,7 @@ class EISInspector:
         '''
         if self.data_type == "data":
             self.fig = plt.figure(figsize=(self.xy_ratio*6 + 5, 5*1.1), layout='constrained')
-            self.fig1, self.fig2 = self.fig.subfigures(1,2,width_ratios=[self.xy_ratio*1.3, 1])
+            self.fig1, self.fig2 = self.fig.subfigures(1,2,width_ratios=[self.xy_ratio*1.3, 1],)
 
             self.ax1 = self.fig1.add_subplot(projection=self.intmap)
             self.intmap.plot(axes=self.ax1, aspect=self.data.meta["aspect"], 
@@ -212,7 +212,7 @@ class EISInspector:
                              title=None)
             
             
-            clb1, clb_ax1 = plot_colorbar(im1, self.ax1, bbox_to_anchor=(0.05, 1.02, 0.9, 0.1*self.xy_ratio),fontsize=10,
+            clb1, clb_ax1 = plot_colorbar(im1, self.ax1, bbox_to_anchor=(0.15, 1.02, 0.7, 0.1*self.xy_ratio),fontsize=10,
                                             orientation="horizontal",
                                             title=None,
                                             scilimits=(-2,2))
@@ -228,13 +228,16 @@ class EISInspector:
             clb_ax1.set_xlabel(r"Intensity [$\rm erg\,s^{-1}\,cm^{-2}\,sr^{-1}$]", fontsize=10)
             
             self.ax2 = self.fig1.add_subplot(132, projection=self.velmap)
+            self.ax2.sharex(self.ax1)
+            self.ax2.sharey(self.ax1)
+
             vel_lim = np.max(np.abs([np.nanpercentile(self.velmap.data, 1), np.nanpercentile(self.velmap.data, 99)]))
             im2 = self.velmap.plot(axes=self.ax2, aspect=self.data.meta["aspect"], 
                              norm=ImageNormalize(vmin=-vel_lim, vmax=vel_lim),
                              cmap="coolwarm",
                              title=None)
             
-            clb2, clb_ax2 = plot_colorbar(im2, self.ax2, bbox_to_anchor=(0.05, 1.02, 0.9, 0.1*self.xy_ratio),fontsize=10,
+            clb2, clb_ax2 = plot_colorbar(im2, self.ax2, bbox_to_anchor=(0.15, 1.02, 0.7, 0.1*self.xy_ratio),fontsize=10,
                                             orientation="horizontal",
                                             title=None,
                                             scilimits=(-2,2))
@@ -244,13 +247,16 @@ class EISInspector:
             clb_ax2.set_xlabel(r"Vlos [$\rm km\,s^{-1}$]", fontsize=10)
             
             self.ax3 = self.fig1.add_subplot(133, projection=self.widmap)
+            self.ax3.sharex(self.ax1)
+            self.ax3.sharey(self.ax1)
+
             im3 = self.widmap.plot(axes=self.ax3, aspect=self.data.meta["aspect"],
                                 norm=ImageNormalize(vmin=np.nanpercentile(self.widmap.data, 1),
                                                     vmax=np.nanpercentile(self.widmap.data, 99)),
                                 cmap="cividis",
                                 title=None)
             
-            clb3, clb_ax3 = plot_colorbar(im3, self.ax3, bbox_to_anchor=(0.05, 1.02, 0.9, 0.1*self.xy_ratio),fontsize=10,
+            clb3, clb_ax3 = plot_colorbar(im3, self.ax3, bbox_to_anchor=(0.15, 1.02, 0.7, 0.1*self.xy_ratio),fontsize=10,
                                             orientation="horizontal",
                                             title=None,
                                             scilimits=(-2,2))
@@ -306,8 +312,8 @@ class EISInspector:
         self.skycoord = None
         self.markers = None
 
-        self.fig.get_layout_engine().set(w_pad=0/72, h_pad=0/72, hspace=0,
-                            wspace=0,rect=[0.01,0.02,0.98,0.96])
+        self.fig.get_layout_engine().set(w_pad=4/72, h_pad=0/72, hspace=0,
+                            wspace=0,rect=[0,0.02,1,0.96])
         # self.fig1.get_layout_engine().set(w_pad=2/72, h_pad=4/72, hspace=0,
         #                     wspace=0,)
         # self.fig2.get_layout_engine().set(w_pad=2/72, h_pad=0/72, hspace=0,
@@ -321,29 +327,30 @@ class EISInspector:
         '''
         The event handler when clicking on the map.
         '''
-        if self.data_type == "data":
-            if event.inaxes == self.ax1:
-                self.select_x = np.round(event.xdata).astype(int)
-                self.select_y = np.round(event.ydata).astype(int)
+        if self.fig.canvas.toolbar.mode not in ["pan/zoom", "zoom rect"]:
+            if self.data_type == "data":
+                if event.inaxes == self.ax1:
+                    self.select_x = np.round(event.xdata).astype(int)
+                    self.select_y = np.round(event.ydata).astype(int)
 
-                self.skycoord = self.intmap.pixel_to_world(self.select_x*u.pix, self.select_y*u.pix)
-                self.ax_line_profile.set_title(f"({self.select_x:.0f}, {self.select_y:.0f}) " 
-                                        f"({self.skycoord.Tx.to_value(u.arcsec):.1f}\", {self.skycoord.Ty.to_value(u.arcsec):.1f}\")",
-                                        fontsize=10)
+                    self.skycoord = self.intmap.pixel_to_world(self.select_x*u.pix, self.select_y*u.pix)
+                    self.ax_line_profile.set_title(f"({self.select_x:.0f}, {self.select_y:.0f}) " 
+                                            f"({self.skycoord.Tx.to_value(u.arcsec):.1f}\", {self.skycoord.Ty.to_value(u.arcsec):.1f}\")",
+                                            fontsize=10)
 
-                self.update_line_profile()
-        elif self.data_type == "fit":
-            if event.inaxes in (self.ax1, self.ax2, self.ax3):
-                self.select_x = np.round(event.xdata).astype(int)
-                self.select_y = np.round(event.ydata).astype(int)
+                    self.update_line_profile()
+            elif self.data_type == "fit":
+                if event.inaxes in (self.ax1, self.ax2, self.ax3):
+                    self.select_x = np.round(event.xdata).astype(int)
+                    self.select_y = np.round(event.ydata).astype(int)
 
-                self.skycoord = self.intmap.pixel_to_world(self.select_x*u.pix, self.select_y*u.pix)
-                self.ax_line_profile.set_title(self.intmap.meta["line_id"] + "\n"
-                                        f"({self.select_x:.0f}, {self.select_y:.0f}) " 
-                                        f"({self.skycoord.Tx.to_value(u.arcsec):.1f}\", {self.skycoord.Ty.to_value(u.arcsec):.1f}\")",
-                                        fontsize=10)
+                    self.skycoord = self.intmap.pixel_to_world(self.select_x*u.pix, self.select_y*u.pix)
+                    self.ax_line_profile.set_title(self.intmap.meta["line_id"] + "\n"
+                                            f"({self.select_x:.0f}, {self.select_y:.0f}) " 
+                                            f"({self.skycoord.Tx.to_value(u.arcsec):.1f}\", {self.skycoord.Ty.to_value(u.arcsec):.1f}\")",
+                                            fontsize=10)
 
-                self.update_line_profile()
+                    self.update_line_profile()
 
         
     def update_line_profile(self):
