@@ -176,14 +176,7 @@ class EISInspector:
             # point2 = [SpectralCoord(select_wave_range[1], unit=u.AA), None]
             # self.data = self.data.crop(point1, point2)
 
-        # print window info
-        print("{:>4s} {:>16s} {:>8s} {:>8s}".format("Idx", "Win Name", "wmin", "wmax"))
-        for row_ in self.data.meta["wininfo"]:
-            if self.data.meta["iwin"] == row_[0]:
-                print("{:4d} {:>16s} {:>8.3f} {:>8.3f} <---".format(*row_))
-            else:
-                print("{:4d} {:>16s} {:>8.3f} {:>8.3f}".format(*row_))
-    
+
     def _init_gui(self):
         '''
         Initialize the GUI.
@@ -330,6 +323,15 @@ class EISInspector:
         
         self.fig.canvas.draw()
         self.fig.canvas.mpl_connect('button_press_event', self._on_click)
+
+        # print window info
+        print("{:>4s} {:>16s} {:>8s} {:>8s}".format("Idx", "Win Name", "wmin", "wmax"))
+        for row_ in self.data.meta["wininfo"]:
+            if self.data.meta["iwin"] == row_[0]:
+                print("{:4d} {:>16s} {:>8.3f} {:>8.3f} <---".format(*row_))
+            else:
+                print("{:4d} {:>16s} {:>8.3f} {:>8.3f}".format(*row_))
+
         plt.show()
 
     def _on_click(self, event):
