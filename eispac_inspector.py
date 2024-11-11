@@ -176,6 +176,13 @@ class EISInspector:
             # point2 = [SpectralCoord(select_wave_range[1], unit=u.AA), None]
             # self.data = self.data.crop(point1, point2)
 
+        # print window info
+        print("{:>4s} {:>16s} {:>8s} {:>8s}".format("Idx", "Win Name", "wmin", "wmax"))
+        for row_ in self.data.meta["wininfo"]:
+            if self.data.meta["iwin"] == row_[0]:
+                print("{:4d} {:>16s} {:>8.3f} {:>8.3f} <---".format(*row_))
+            else:
+                print("{:4d} {:>16s} {:>8.3f} {:>8.3f}".format(*row_))
     
     def _init_gui(self):
         '''
@@ -231,7 +238,7 @@ class EISInspector:
             self.ax2.sharex(self.ax1)
             self.ax2.sharey(self.ax1)
 
-            vel_lim = np.max(np.abs([np.nanpercentile(self.velmap.data, 1), np.nanpercentile(self.velmap.data, 99)]))
+            vel_lim = np.max(np.abs([np.nanpercentile(self.velmap.data, 3), np.nanpercentile(self.velmap.data, 97)]))
             im2 = self.velmap.plot(axes=self.ax2, aspect=self.data.meta["aspect"], 
                              norm=ImageNormalize(vmin=-vel_lim, vmax=vel_lim),
                              cmap="coolwarm",
@@ -377,6 +384,8 @@ class EISInspector:
 
                 fit_x_res, fit_y_res = self.fit.get_fit_profile(coords=[self.select_y,self.select_x],)
                 fit_y_res = self.data.data[self.select_y, self.select_x, :] - fit_y_res
+                fit_x_res = fit_x_res.filled(np.nan)
+                fit_y_res = fit_y_res.filled(np.nan)
 
                 self.line_residual = self.ax_residual.errorbar(fit_x_res, fit_y_res, yerr=np.abs(self.data.uncertainty.array[self.select_y, self.select_x, :]),
                                                                 ds='steps-mid', capsize=2, lw=1.5, color="#E87A90")
@@ -415,6 +424,9 @@ class EISInspector:
                 
                 fit_x_res, fit_y_res = self.fit.get_fit_profile(coords=[self.select_y,self.select_x],)
                 fit_y_res = self.data.data[self.select_y, self.select_x, :] - fit_y_res
+                fit_x_res = fit_x_res.filled(np.nan)
+                fit_y_res = fit_y_res.filled(np.nan)
+
                 update_errorbar(self.line_residual, fit_x_res, fit_y_res, yerr=np.abs(self.data.uncertainty.array[self.select_y, self.select_x, :]))
                 
                 self.text.set_text(f"Int: {self.intmap.data[self.select_y, self.select_x]:.2e}\n"
