@@ -293,15 +293,15 @@ class EISInspector:
                                                         yerr=np.nanstd(self.data.data, axis=(0,1)),
                                                         ds='steps-mid', capsize=2, lw=1.5, color="#E87A90")
         self.line_data_fill = self.ax_line_profile.fill_between(np.nanmean(self.data.wavelength, axis=(0,1)),
-                                                                    np.ones(self.data.data.shape[-1])*np.min(np.nanmean(self.data.data, axis=(0,1))),
+                                                                    np.ones(self.data.data.shape[-1])*np.min([-0.1*np.max(np.nanmean(self.data.data, axis=(0,1))),0]),
                                                                     np.nanmean(self.data.data, axis=(0,1)),
                     step='mid',color="#FEDFE1",alpha=0.6)
         
         self.line_all_fit = None
         self.line_single_fits = None
         
-        update_errorbar_visibility(self.line_data, False)
-        self.line_data_fill.set_visible(False)
+        # update_errorbar_visibility(self.line_data, False)
+        # self.line_data_fill.set_visible(False)
         
         
         self.ax_line_profile.set_ylabel(r"Intensity [$\rm erg\,s^{-1}\,cm^{-2}\,sr^{-1}$]")
@@ -376,7 +376,7 @@ class EISInspector:
 
         self.line_data_fill.set_visible(True)
         update_fill_between(self.line_data_fill, self.data.wavelength[self.select_y, self.select_x, :],
-                            np.ones(self.data.data.shape[-1])*np.min(self.data.data[self.select_y, self.select_x, :]),
+                            np.ones(self.data.data.shape[-1])*np.min([-0.1*np.max(self.data.data[self.select_y, self.select_x, :]), 0]),
                             self.data.data[self.select_y, self.select_x, :])
         
         if self.data_type == "fit":
@@ -438,9 +438,10 @@ class EISInspector:
                 
                 self.ax_residual.relim()
                 self.ax_residual.autoscale(axis="y")
-            
+        
         self.ax_line_profile.relim()
         self.ax_line_profile.autoscale(axis="y")
+        self.ax_line_profile.set_ylim(bottom=np.min([-0.1*np.max(self.data.data[self.select_y, self.select_x, :]),0]))
 
         if self.markers is None:
 
