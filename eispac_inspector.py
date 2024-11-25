@@ -133,7 +133,7 @@ class EISInspector:
             self.xy_ratio = self.data.meta["mod_index"]["fovx"]/self.data.meta["mod_index"]["fovy"]
             data_to_mean = self.data.data.copy()
             data_to_mean[data_to_mean < 0] = np.nan
-            self.intmap = sunpy.map.Map(np.nanmean(self.data.data, axis=-1), self.data.wcs.celestial)
+            self.intmap = sunpy.map.Map(np.nanmean(data_to_mean, axis=-1), self.data.wcs.celestial)
 
         elif self.filename_fit is not None:
             self.data_type = "fit"

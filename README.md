@@ -1,5 +1,5 @@
 # eispac_inspector
-A naive script to inspect spectral lines profiles in [eispac](https://eispac.readthedocs.io/en/latest/index.html#) level1 data files or fitting results, imitating some functions of IDL xfiles. 
+A naive script to inspect spectral lines profiles in [eispac](https://eispac.readthedocs.io/en/latest/index.html#) level1 data files or fitting results, imitating some functions of IDL xfiles. The script was written because I did not aware of a more advanced tool `eis_explore_raster` in eispac, under development, at the time of writing. 
 
 The script can be called as a module or a standalone script from the command line. Users can choose inspecting only the line profiles from the level 1 *.data.h5 files or the fitting results from the *.fit.h5 files. The script will automatically detect the file type and load the data accordingly. If only a single *.fit.h5 file is provided, the script will load the corresponding *.data.h5 file automatically, searching for the file in the same directory or using the filename_data in the fit meta.
 
